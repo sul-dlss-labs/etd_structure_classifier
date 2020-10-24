@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    nbayes (0.1.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  nbayes
+
+BUNDLED WITH
+   2.1.4
