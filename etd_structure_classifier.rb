@@ -80,7 +80,7 @@ class EtdStructureClassifier
   end
 
   def persisted_model
-    '.nb_model'
+    "#{__dir__}/.nb_model"
   end
 
   def toc_files
