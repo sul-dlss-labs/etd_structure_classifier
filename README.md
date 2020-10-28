@@ -112,3 +112,52 @@ This is almost certainly going to result in a skewed training set, and it is des
 ```ruby
 EtdStructureTrainingDataProcessor.new(druid, pages).get_training_data(texts: false, bibs: false)
 ```
+
+## Putting it All Together
+
+In this example we will do the following:
+1. Clear the existing model
+1. Convert ETDs to plain text
+1. Take samplings from that text to create a training set of Table of Contents, Texts, and Bibliographies
+1. Train the model on that most of the gathered training data
+1. Test a subset of that gathered training data
+1. Use the new model to predict the structure a piece of text
+1. Persist the new model
+
+```ruby
+require './druid_2_text/druid_2_text'
+require './etd_structure_classifier/etd_structure_classifier'
+require './etd_structure_classifier/etd_structure_training_data_processor'
+
+# Three ETDs, you need many more than this for any accuracy
+druids = [
+  'pd570yx1816',
+  'qn216rx5962',
+  'nw312qt8861'
+]
+
+# Remove/Clear the existing model
+EtdStructureClassifier.new.clear!
+
+# Convert PDFs for the druids in SDR to  text and use that to gather training data
+Druid2Text.call(druids: druids) do |druid, pages|
+  EtdStructureTrainingDataProcessor.new(druid, pages).get_training_data
+end
+
+# Instantiate the classifier and train the model using the gathered data
+classifier = EtdStructureClassifier.new
+classifier.train
+
+# Test the classifier on a subset of the gathered data (not seen by the training) and report the results
+classifier.test
+
+# Use the classifier to predict the structure of a piece of text
+classifier.classify(
+  '(71) Gabrielli, C.; Grand, P. P.; Lasia, A.; Perrot, H. Investigation of
+        Hydrogen Adsorption and Absorption in Palladium Thin Films: II. Cyclic
+        Voltammetry. Journal of The Electrochemical Society 2004, 151, A1937-A1942.'
+)
+
+# Save the updated model
+classifier.persist!
+```
