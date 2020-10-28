@@ -69,9 +69,10 @@ class EtdStructureClassifier
 
   def split_files(files)
     files = files.shuffle
+    twenty_percent = files.length / 5
     {
-      train: files[0, files.length - 20],
-      test: files[-20, 20]
+      train: files[0, files.length - twenty_percent],
+      test: files[-twenty_percent, twenty_percent]
     }
   end
 
@@ -84,15 +85,15 @@ class EtdStructureClassifier
   end
 
   def toc_files
-    @toc_files ||= split_files(Dir['./training_data/known_tocs/*.txt'])
+    @toc_files ||= split_files(Dir["#{__dir__}/training_data/known_tocs/*.txt"])
   end
 
   def text_files
-    @text_files ||= split_files(Dir['./training_data/known_text/*.txt'])
+    @text_files ||= split_files(Dir["#{__dir__}/training_data/known_text/*.txt"])
   end
 
   def bib_files
-    @bib_files ||= split_files(Dir['./training_data/known_bibs/*.txt'])
+    @bib_files ||= split_files(Dir["#{__dir__}/training_data/known_bibs/*.txt"])
   end
 
   def tokenize_text(text)
