@@ -121,7 +121,7 @@ In this example we will do the following:
 1. Take samplings from that text to create a training set of Table of Contents, Texts, and Bibliographies
 1. Train the model on that most of the gathered training data
 1. Test a subset of that gathered training data
-1. Use the new model to predict the structure a piece of text
+1. Use the new model to predict the structure of a piece of text
 1. Persist the new model
 
 ```ruby
