@@ -72,7 +72,7 @@ classifier.classify(
 
 ## Persisting/Destroying the Model
 
-You can persist the model that you've trained as well as remove the current model.  Note that the classifier in memory will still work after clearing the model, so a new instance of the classifier would need to be instatiated
+You can persist the model that you've trained as well as remove the current model.  Note that the classifier in memory will still work after clearing the model, so a new instance of the classifier would need to be instantiated
 
 ```ruby
 
@@ -83,4 +83,32 @@ classifier.persisted?
 classifier.clear!
 classifier.persisted?
 => false
+```
+
+## Adding Training Data
+
+The classifiers built in training will classify text in the `training_data/known_bibs`, `training_data/known_text`, and `training_data/known_tocs` directories with their respective label.
+
+This codebase provides a class that, given a document (as a set of full text pages), will take a sampling of the beginning, middle, and end of the document to classify the page as a Table of Contents page, Text Page, or Bibliography page respectively.
+
+This class, in conjunction with the [Druid2Text](https://github.com/sul-dlss-labs/druid_2_text) Proof of Concept, can be used to easily generate training data given a list of druids.
+
+_This is in a context outside the root of this project where both codebases are being required._
+
+```ruby
+require './druid_2_text/druid_2_text'
+require './etd_structure_classifier/etd_structure_training_data_processor'
+
+Druid2Text.call(druids: ['pd570yx1816']) do |druid, pages|
+  EtdStructureTrainingDataProcessor.new(druid, pages).get_training_data
+end
+```
+
+For each document this will ask the user to answer `yes`/`y` or `no`/`n` for 15 pages and add the page as a text file to the appropriate training data directory when `yes`/`y` is answered.
+
+This is almost certainly going to result in a skewed training set, and it is desirable to have the training sets roughly equal in size.  In that case you'll likely want to figure out which label(s) needs additional training data and set the others to false in the `get_training_data` method (possible labels: `tocs`, `texts`, `bibs`)
+
+
+```ruby
+EtdStructureTrainingDataProcessor.new(druid, pages).get_training_data(texts: false, bibs: false)
 ```
